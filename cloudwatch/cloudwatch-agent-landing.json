@@ -1,0 +1,20 @@
+{
+  "agent": {
+    "metrics_collection_interval": 60,
+    "run_as_user": "root"
+  },
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/home/ec2-user/novacare-devops/landing/logs/app.log",
+            "log_group_name": "/novacare/landing",
+            "log_stream_name": "{instance_id}-landing",
+            "timezone": "UTC"
+          }
+        ]
+      }
+    }
+  }
+}

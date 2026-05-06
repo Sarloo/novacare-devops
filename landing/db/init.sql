@@ -1,0 +1,10 @@
+CREATE DATABASE IF NOT EXISTS novacare;
+USE novacare;
+
+CREATE TABLE IF NOT EXISTS contactos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(100),
+  correo VARCHAR(100),
+  mensaje TEXT,
+  fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
