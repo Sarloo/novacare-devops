@@ -134,18 +134,3 @@ La funcion `lambda/lambda_error_handler.py` recibe eventos de alarmas de CloudWa
 
 La intranet no debe exponerse a Internet. En una arquitectura AWS recomendada, la landing estaria en una EC2 publica o detras de un balanceador publico, mientras que la intranet estaria en una EC2 privada sin IP publica. El acceso administrativo debe realizarse desde un Windows bastion, VPN o Session Manager con permisos controlados.
 
-## Checklist de capturas para el reporte
-
-- Landing publica abierta en navegador.
-- Formulario publico enviado correctamente.
-- Boton de prueba de backend en landing.
-- Boton de ERROR en landing y evidencia en `logs/app.log`.
-- Intranet abierta desde entorno privado.
-- Dashboard interno consultado.
-- Registro de actividad interna guardado.
-- Boton de ERROR en intranet y evidencia en `logs/app.log`.
-- Contenedores ejecutandose con `docker compose ps`.
-- Consulta MySQL mostrando registros en `contactos`.
-- Consulta MySQL mostrando registros en `bitacora`.
-- CloudWatch Log Groups `/novacare/landing` y `/novacare/intranet`.
-- Lambda ejecutada con evento de prueba de alarma.
