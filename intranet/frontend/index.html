@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NovaCare Intranet | Panel interno</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #eef2f7; color: #111827; }
+    .sidebar { background: #1f2937; color: white; min-height: 100vh; }
+    .metric-card { border: 0; border-radius: 8px; box-shadow: 0 8px 22px rgba(31, 41, 55, .1); }
+    .private-badge { background: #dc3545; }
+    .status-box { min-height: 48px; }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <aside class="col-lg-3 col-xl-2 sidebar p-4">
+        <h1 class="h4 fw-bold">NovaCare Clinic</h1>
+        <p class="mb-3">Panel interno</p>
+        <span class="badge private-badge">Acceso privado</span>
+      </aside>
+
+      <main class="col-lg-9 col-xl-10 p-4 p-lg-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+          <div>
+            <h2 class="fw-bold mb-1">Dashboard administrativo</h2>
+            <p class="text-secondary mb-0">Monitoreo interno de actividad operativa.</p>
+          </div>
+          <div class="d-flex gap-2">
+            <button id="dashboardBtn" class="btn btn-primary">Consultar dashboard</button>
+            <button id="errorBtn" class="btn btn-outline-danger">Simular ERROR</button>
+          </div>
+        </div>
+
+        <section class="row g-3 mb-4">
+          <div class="col-md-4">
+            <div class="card metric-card">
+              <div class="card-body">
+                <p class="text-secondary mb-1">Empleados activos</p>
+                <div id="empleados" class="display-6 fw-bold">--</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card metric-card">
+              <div class="card-body">
+                <p class="text-secondary mb-1">Citas registradas</p>
+                <div id="citas" class="display-6 fw-bold">--</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card metric-card">
+              <div class="card-body">
+                <p class="text-secondary mb-1">Estado del sistema</p>
+                <div id="estado" class="h3 fw-bold text-success">--</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="row g-4">
+          <div class="col-lg-7">
+            <div class="bg-white rounded-2 shadow-sm p-4">
+              <h3 class="h5 fw-bold mb-3">Registrar actividad interna</h3>
+              <form id="bitacoraForm">
+                <div class="mb-3">
+                  <label for="empleado" class="form-label">Empleado</label>
+                  <input id="empleado" name="empleado" class="form-control" maxlength="100" required>
+                </div>
+                <div class="mb-3">
+                  <label for="actividad" class="form-label">Actividad</label>
+                  <textarea id="actividad" name="actividad" class="form-control" rows="4" required></textarea>
+                </div>
+                <button class="btn btn-success w-100" type="submit">Guardar actividad</button>
+              </form>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="bg-white rounded-2 shadow-sm p-4">
+              <h3 class="h5 fw-bold mb-3">Estado de operacion</h3>
+              <div id="status" class="alert alert-info status-box mb-0">Panel listo para consultar datos internos.</div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const statusBox = document.getElementById('status');
+
+    function showStatus(message, type = 'info') {
+      statusBox.className = `alert alert-${type} status-box mb-0`;
+      statusBox.textContent = message;
+    }
+
+    document.getElementById('dashboardBtn').addEventListener('click', async () => {
+      try {
+        const response = await fetch('/api/dashboard');
+        const data = await response.json();
+        document.getElementById('empleados').textContent = data.empleados;
+        document.getElementById('citas').textContent = data.citas;
+        document.getElementById('estado').textContent = data.estado;
+        showStatus('Dashboard actualizado correctamente.', 'success');
+      } catch (error) {
+        showStatus('No se pudo consultar el dashboard.', 'danger');
+      }
+    });
+
+    document.getElementById('errorBtn').addEventListener('click', async () => {
+      const response = await fetch('/api/error');
+      const data = await response.json();
+      showStatus(data.message, 'warning');
+    });
+
+    document.getElementById('bitacoraForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const payload = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch('/api/bitacora', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Error al guardar');
+        event.target.reset();
+        showStatus(data.message, 'success');
+      } catch (error) {
+        showStatus(error.message, 'danger');
+      }
+    });
+  </script>
+</body>
+</html>
